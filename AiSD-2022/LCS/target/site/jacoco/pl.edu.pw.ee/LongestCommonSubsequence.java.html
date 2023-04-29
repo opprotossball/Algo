@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LongestCommonSubsequence.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aisd_lab_9_longest_common_subsequence</a> &gt; <a href="index.source.html" class="el_package">pl.edu.pw.ee</a> &gt; <span class="el_source">LongestCommonSubsequence.java</span></div><h1>LongestCommonSubsequence.java</h1><pre class="source lang-java linenums">package pl.edu.pw.ee;
+
+class LongestCommonSubsequence {
+    private Node[][] matrix;
+    private String topStr;
+    private String leftStr;
+    private int nColumns;
+    private int nRows;
+    private String result;
+
+<span class="fc" id="L11">    public LongestCommonSubsequence(String topStr, String leftStr) {</span>
+<span class="pc bpc" id="L12" title="1 of 4 branches missed.">        if (topStr == null || leftStr == null) {</span>
+<span class="fc" id="L13">            throw new IllegalArgumentException(&quot;Given string cannot be null&quot;);</span>
+        }
+<span class="fc" id="L15">        this.topStr = topStr;</span>
+<span class="fc" id="L16">        this.leftStr = leftStr;</span>
+<span class="fc" id="L17">        nColumns = topStr.length() + 1;</span>
+<span class="fc" id="L18">        nRows = leftStr.length() + 1;</span>
+<span class="fc" id="L19">        initializeMatrices();</span>
+<span class="fc" id="L20">    }</span>
+
+    public String findLCS() {
+<span class="fc" id="L23">        traverse();</span>
+<span class="fc" id="L24">        return concatenateString();</span>
+    }
+
+    public void display() {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (result == null) {</span>
+<span class="fc" id="L29">            throw new IllegalStateException(&quot;findLCS method must be used to display result&quot;);</span>
+        }
+<span class="fc" id="L31">        System.out.println(buildBorderLine());</span>
+<span class="fc" id="L32">        System.out.println(buildTopLine(0));</span>
+<span class="fc" id="L33">        System.out.println(buildHeaderMiddleLine());</span>
+<span class="fc" id="L34">        System.out.println(buildBottomLine());</span>
+<span class="fc" id="L35">        System.out.println(buildBorderLine());</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (int row = 0; row &lt; nRows; row++) {</span>
+<span class="fc" id="L37">            System.out.println(buildTopLine(row));</span>
+<span class="fc" id="L38">            System.out.println(buildMiddleLine(row));</span>
+<span class="fc" id="L39">            System.out.println(buildBottomLine());</span>
+<span class="fc" id="L40">            System.out.println(buildBorderLine());</span>
+        }
+<span class="fc" id="L42">    }</span>
+
+    private void initializeMatrices() {
+<span class="fc" id="L45">        matrix = new Node[nRows][nColumns];</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        for (int i = 0; i &lt; nRows; i++) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            for (int j = 0; j &lt; nColumns; j++) {</span>
+<span class="fc" id="L48">                matrix[i][j] = new Node(0);</span>
+            }
+        }
+<span class="fc" id="L51">    }</span>
+
+    private void traverse() {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (int row = 1; row &lt; nRows; row++) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (int column = 1; column &lt; nColumns; column++) {</span>
+<span class="fc" id="L56">                Node node = matrix[row][column];</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                if (topStr.charAt(column - 1) == leftStr.charAt(row - 1)) {</span>
+<span class="fc" id="L58">                    node.setValue(matrix[row - 1][column - 1].getValue() + 1);</span>
+<span class="fc" id="L59">                    node.setDirection(Direction.DIAGONALLY);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                } else if (matrix[row - 1][column].getValue() &gt;= matrix[row][column - 1].getValue()) {</span>
+<span class="fc" id="L61">                    node.setValue(matrix[row - 1][column].getValue());</span>
+<span class="fc" id="L62">                    node.setDirection(Direction.UP);</span>
+                } else {
+<span class="fc" id="L64">                    node.setValue(matrix[row][column - 1].getValue());</span>
+<span class="fc" id="L65">                    node.setDirection(Direction.LEFT);</span>
+                }
+            }
+        }
+<span class="fc" id="L69">    }</span>
+
+    private String concatenateString() {
+<span class="fc" id="L72">        StringBuilder stringBuilder = new StringBuilder();</span>
+<span class="fc" id="L73">        int row = nRows - 1;</span>
+<span class="fc" id="L74">        int column = nColumns - 1;</span>
+<span class="fc bfc" id="L75" title="All 4 branches covered.">        while (row &gt; 0 || column &gt; 0) {</span>
+<span class="fc" id="L76">            Node node = matrix[row][column];</span>
+<span class="fc" id="L77">            node.setOnPath(true);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (node.getDirection() == Direction.DIAGONALLY) {</span>
+<span class="fc" id="L79">                stringBuilder.append(leftStr.charAt(row - 1));</span>
+<span class="fc" id="L80">                row--;</span>
+<span class="fc" id="L81">                column--;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            } else if (node.getDirection() == Direction.UP) {</span>
+<span class="fc" id="L83">                row--;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            } else if (node.getDirection() == Direction.LEFT) {</span>
+<span class="fc" id="L85">                column--;</span>
+            } else {
+                break;
+            }
+<span class="fc" id="L89">        }</span>
+<span class="fc" id="L90">        stringBuilder.reverse();</span>
+<span class="fc" id="L91">        String result = stringBuilder.toString();</span>
+<span class="fc" id="L92">        this.result = result;</span>
+<span class="fc" id="L93">        return result;</span>
+    }
+
+    private void repeatAppend(StringBuilder stringBuilder, String pattern, int count) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int i = 0; i &lt; count; i++) {</span>
+<span class="fc" id="L98">            stringBuilder.append(pattern);</span>
+        }
+<span class="fc" id="L100">    }</span>
+
+    private String buildBorderLine() {
+<span class="fc" id="L103">        StringBuilder stringBuilder = new StringBuilder(&quot;+&quot;);</span>
+<span class="fc" id="L104">        repeatAppend(stringBuilder, &quot;-&quot;, 7);</span>
+<span class="fc" id="L105">        stringBuilder.append(&quot;+&quot;);</span>
+<span class="fc" id="L106">        repeatAppend(stringBuilder, &quot;-----+&quot;, nColumns);</span>
+<span class="fc" id="L107">        return stringBuilder.toString();</span>
+    }
+
+    private String buildTopLine(int row) {
+<span class="fc" id="L111">        StringBuilder stringBuilder = new StringBuilder(&quot;|&quot;);</span>
+<span class="fc" id="L112">        repeatAppend(stringBuilder, &quot; &quot;, 7);</span>
+<span class="fc" id="L113">        stringBuilder.append(&quot;|&quot;);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        for (int i = 0; i &lt; nColumns; i++) {</span>
+<span class="fc" id="L115">            Node node = matrix[row][i];</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            if (!node.isOnPath()) {</span>
+<span class="fc" id="L117">                stringBuilder.append(&quot;     &quot;);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            } else if (node.getDirection() == Direction.DIAGONALLY) {</span>
+<span class="fc" id="L119">                stringBuilder.append(&quot;\\    &quot;);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">            } else if (node.getDirection() == Direction.UP) {</span>
+<span class="fc" id="L121">                stringBuilder.append(&quot;  ^  &quot;);</span>
+            } else {
+<span class="fc" id="L123">                stringBuilder.append(&quot;     &quot;);</span>
+            }
+<span class="fc" id="L125">            stringBuilder.append(&quot;|&quot;);</span>
+        }
+<span class="fc" id="L127">        return stringBuilder.toString();</span>
+    }
+
+    private String buildHeaderMiddleLine() {
+<span class="fc" id="L131">        StringBuilder stringBuilder = new StringBuilder(&quot;|       |     |&quot;);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 1; i &lt; nColumns; i++) {</span>
+<span class="fc" id="L133">            stringBuilder.append(&quot;  &quot;);</span>
+<span class="fc" id="L134">            String symbol = SpecialCharacterReplacer.getReplacement(topStr.charAt(i - 1));</span>
+<span class="fc" id="L135">            stringBuilder.append(symbol);</span>
+<span class="fc" id="L136">            repeatAppend(stringBuilder, &quot; &quot;, 3 - symbol.length());</span>
+<span class="fc" id="L137">            stringBuilder.append(&quot;|&quot;);</span>
+        }
+<span class="fc" id="L139">        return stringBuilder.toString();</span>
+    }
+
+    private String buildMiddleLine(int row) {
+<span class="fc" id="L143">        StringBuilder stringBuilder = new StringBuilder();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if (row == 0) {</span>
+<span class="fc" id="L145">            stringBuilder.append(&quot;|       |&quot;);</span>
+        } else {
+<span class="fc" id="L147">            stringBuilder.append(&quot;|   &quot;);</span>
+<span class="fc" id="L148">            String symbol = SpecialCharacterReplacer.getReplacement(leftStr.charAt(row - 1));</span>
+<span class="fc" id="L149">            stringBuilder.append(symbol);</span>
+<span class="fc" id="L150">            repeatAppend(stringBuilder, &quot; &quot;, 4 - symbol.length());</span>
+<span class="fc" id="L151">            stringBuilder.append(&quot;|&quot;);</span>
+        }
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (int i = 0; i &lt; nColumns; i++) {</span>
+<span class="fc" id="L154">            Node node = matrix[row][i];</span>
+<span class="fc bfc" id="L155" title="All 4 branches covered.">            if (node.getDirection() == Direction.LEFT &amp;&amp; node.isOnPath()) {</span>
+<span class="fc" id="L156">                stringBuilder.append(&quot;&lt; &quot;);</span>
+            } else {
+<span class="fc" id="L158">                stringBuilder.append(&quot;  &quot;);</span>
+            }
+<span class="fc" id="L160">            String value = String.valueOf(node.getValue());</span>
+<span class="fc" id="L161">            stringBuilder.append(value);</span>
+<span class="fc" id="L162">            repeatAppend(stringBuilder, &quot; &quot;, 3 - value.length());</span>
+<span class="fc" id="L163">            stringBuilder.append(&quot;|&quot;);</span>
+        }
+<span class="fc" id="L165">        return stringBuilder.toString();</span>
+    }
+
+    private String buildBottomLine() {
+<span class="fc" id="L169">        StringBuilder stringBuilder = new StringBuilder(&quot;|       |&quot;);</span>
+<span class="fc" id="L170">        repeatAppend(stringBuilder, &quot;     |&quot;, nColumns);</span>
+<span class="fc" id="L171">        return stringBuilder.toString();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
